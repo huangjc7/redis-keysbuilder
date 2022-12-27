@@ -3,4 +3,4 @@
 * 适用版本
   * redis 7xx
 * 使用方法
-  * `./keysbuilder -h 127.0.0.1:6379 -h 50000 //写入50000随机keys`
+  * `./keysbuilder_linux_amd64 -h 127.0.0.1:6379 -h 50000 //写入50000随机keys`
