@@ -45,11 +45,11 @@ func main() {
 	}
 
 	for i := 0; i < n; i++ {
+		wg.Add(1)
 		go func() {
-			wg.Add(1)
 			redis.WriteKey()
 			fmt.Printf("已经写入%v key\n", i)
-			wg.Done()
+			defer wg.Done()
 		}()
 		wg.Wait()
 	}
