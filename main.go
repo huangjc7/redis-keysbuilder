@@ -12,12 +12,14 @@ import (
 var (
 	h             string
 	n             int
+	p             string
 	help          bool
 	clusterClient *redis.ClusterClient
 	wg            sync.WaitGroup
 )
 
 func init() {
+	flag.StringVar(&p, "p", "", "redis认证密码")
 	flag.StringVar(&h, "h", "127.0.0.1:6379", "redis连接地址 ip+port")
 	flag.IntVar(&n, "n", 10000, "写入key数量 默认10000")
 	flag.BoolVar(&help, "help", false, "查看帮助")
@@ -35,6 +37,7 @@ func main() {
 		Addrs: []string{
 			h,
 		},
+		Password: p,
 	})
 
 	redis := controller.NewRedis(clusterClient)
