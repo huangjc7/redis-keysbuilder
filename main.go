@@ -64,13 +64,7 @@ func main() {
 	go redis.WriteKey()
 	time.Sleep(time.Second * 25)
 
-	//for i := 0; i < n; i++ {
-	//	wg.Add(1)
-	//	go func() {
-	//		redis.WriteKey()
-	//		fmt.Printf("已经写入%v key\n", i)
-	//		defer wg.Done()
-	//	}()
-	//	wg.Wait()
-	//}
+	// TODO
+	// 没有控制写入key的数量
+	// 没有做详细对比数据（使用channel快多少）
 }
