@@ -11,9 +11,15 @@ var ctx = context.Background()
 
 type redisController struct {
 	*redis.ClusterClient
+	kCh chan string
+	//vCh chan string
 }
 
-func RandStr(length int) string {
+func NewRedis(db *redis.ClusterClient, kCh chan string) *redisController {
+	return &redisController{db, kCh}
+}
+
+func (c *redisController) randStr(length int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890")
 	b := make([]rune, length)
 	for i := range b {
@@ -22,9 +28,17 @@ func RandStr(length int) string {
 	return string(b)
 }
 
-func NewRedis(db *redis.ClusterClient) *redisController {
-	return &redisController{db}
+func (c *redisController) ProducerRedisKeys(keynumbers int) {
+	for i := 0; ; i++ {
+		c.kCh <- c.randStr(8)
+	}
 }
+
+//func (c *redisController) producerRedisValues() {
+//	for i := 0; ; i++ {
+//		c.vCh <- c.randStr(7)
+//	}
+//}
 
 func (c *redisController) RedisPing() error {
 	_, err := c.Ping(ctx).Result()
@@ -32,8 +46,13 @@ func (c *redisController) RedisPing() error {
 }
 
 func (c *redisController) WriteKey() {
-	err := c.Set(ctx, RandStr(5), RandStr(7), 0).Err()
-	if err != nil {
-		log.Fatal(err)
+	i := 0
+	for v := range c.kCh {
+		err := c.Set(ctx, v, v, 0).Err()
+		if err != nil {
+			log.Fatal(err)
+		}
+		i++ //计数器
+		log.Printf("已经写入多少 %d keys", i)
 	}
 }

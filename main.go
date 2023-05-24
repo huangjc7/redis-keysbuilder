@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"github.com/go-redis/redis/v9"
 	"log"
 	"redis/controller"
 	"sync"
+	"time"
 )
 
 var (
@@ -25,6 +25,18 @@ func init() {
 	flag.BoolVar(&help, "help", false, "查看帮助")
 }
 
+func CreateRedisKeys() {
+	//for i := 0; i < n; i++ {
+	//	wg.Add(1)
+	//	go func() {
+	//		redis.WriteKey()
+	//		fmt.Printf("已经写入%v key\n", i)
+	//		defer wg.Done()
+	//	}()
+	//	wg.Wait()
+	//}
+}
+
 func main() {
 	flag.Parse()
 	if help {
@@ -40,20 +52,25 @@ func main() {
 		Password: p,
 	})
 
-	redis := controller.NewRedis(clusterClient)
+	kCh := make(chan string, 1000)
+	//vCh := make(chan map[string]string, 1000)
+	redis := controller.NewRedis(clusterClient, kCh)
 
 	err := redis.RedisPing()
 	if err != nil {
 		log.Fatal(err)
 	}
+	go redis.ProducerRedisKeys(n)
+	go redis.WriteKey()
+	time.Sleep(time.Second * 25)
 
-	for i := 0; i < n; i++ {
-		wg.Add(1)
-		go func() {
-			redis.WriteKey()
-			fmt.Printf("已经写入%v key\n", i)
-			defer wg.Done()
-		}()
-		wg.Wait()
-	}
+	//for i := 0; i < n; i++ {
+	//	wg.Add(1)
+	//	go func() {
+	//		redis.WriteKey()
+	//		fmt.Printf("已经写入%v key\n", i)
+	//		defer wg.Done()
+	//	}()
+	//	wg.Wait()
+	//}
 }
