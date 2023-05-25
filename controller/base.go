@@ -54,5 +54,4 @@ func (c *redisController) WriteKey() {
 		i++ //计数器
 		log.Printf("已经写入多少 %d keys", i)
 	}
-
 }
