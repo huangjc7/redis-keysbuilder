@@ -12,7 +12,6 @@ var ctx = context.Background()
 type redisController struct {
 	*redis.ClusterClient
 	kCh chan string
-	//vCh chan string
 }
 
 func NewRedis(db *redis.ClusterClient, kCh chan string) *redisController {
@@ -29,16 +28,16 @@ func (c *redisController) randStr(length int) string {
 }
 
 func (c *redisController) ProducerRedisKeys(keynumbers int) {
-	for i := 0; ; i++ {
+	for i := 0; i < keynumbers; i++ {
 		c.kCh <- c.randStr(8)
 	}
+	close(c.kCh)
 }
 
-//func (c *redisController) producerRedisValues() {
-//	for i := 0; ; i++ {
-//		c.vCh <- c.randStr(7)
-//	}
-//}
+func (c *redisController) Run(n int) {
+	go c.ProducerRedisKeys(n)
+	c.WriteKey()
+}
 
 func (c *redisController) RedisPing() error {
 	_, err := c.Ping(ctx).Result()
@@ -55,4 +54,5 @@ func (c *redisController) WriteKey() {
 		i++ //计数器
 		log.Printf("已经写入多少 %d keys", i)
 	}
+
 }
