@@ -1,6 +1,6 @@
 #!/bin/bash
 build() {
-    sudo CGO_ENABLED=0 GOOS=$2  GOARCH=$1 go build -o keysbuilder main.go
+    sudo CGO_ENABLED=0 GOOS=$2  GOARCH=$1 go build keysbuilder.go
 }
 
 if [ ! $1 ];then
